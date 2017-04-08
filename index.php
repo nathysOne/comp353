@@ -1,5 +1,5 @@
 <?php 
-include 'connection.php';
+include_once 'connection.php';
 connect();
 ?>
 
@@ -12,11 +12,12 @@ connect();
 <body>
 	<h1>Welcome!</h1>
 	<div>
-		<h2>Please Log-In</h2>
-		<form action="/control.php" method="get" id="chooseUser" >
+		<h4>Please Log-In</h4>
+		<form action="login.php" method="get" id="chooseUser" >
 		 <select name="confirmedUsr">
 		  <option value="Director">Director</option>
 		  <option value="Staff">Staff</option>
+		  <option value="User">User</option>
 		  <?php
 		  //retrieve all users and add to dropdown
 		  //test();

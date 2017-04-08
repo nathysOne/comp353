@@ -7,15 +7,36 @@ h1 {
     text-align: left;
 }
 
-p {
+h5 {
+	color: navy;
+	
+}
+
+p,h1,h2,h4,h5 {
     font-family: verdana;
-    font-size: 20px;
+}
+
+dfn {
+    font-family: verdana;
+	font-size: 12px;
 }
 
 #chooseUser {
-    background-color: white;
+    background-color: MintCream;
 	width: 300px;
 	border: 1px solid gray;
 	margin: 10px;
 	padding: 30px;
 }
+
+.infoField {
+	background-color: MintCream;
+	border: 1px solid gray;
+	padding: 10px;
+	width: 500px;
+}
+
+.smallField{
+	width: 50px;
+}
+

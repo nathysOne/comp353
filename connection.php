@@ -1,7 +1,5 @@
  <?php
  
-function test() {echo "testing";}
- 
 function connect() {
 	$servername = "localhost";
 	$username = "root";
