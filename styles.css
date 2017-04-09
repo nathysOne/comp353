@@ -36,6 +36,11 @@ dfn {
 	width: 500px;
 }
 
+.innerBox {
+	border: 1px solid navy;
+	padding: 5px;
+}
+
 .smallField{
 	width: 50px;
 }

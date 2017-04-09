@@ -17,7 +17,6 @@ CREATE TABLE Construction (
 		
         Task varchar(30) NOT NULL,
         CostPerHrs int(10) NOT NULL,
-        Phase varchar(20) NOT NULL,
         TimeInHrs int(10) NOT NULL,
         PRIMARY KEY (TaskIDsuff, TaskIDpref)
 );
