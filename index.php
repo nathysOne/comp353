@@ -6,7 +6,9 @@ session_destroy();
 
 <html>
 <head>
-
+	<?php 
+	//createAllTables(); 
+	?>
 	<title>Construction Inc.</title>
 	<link rel="stylesheet" href="styles.css">
 </head>

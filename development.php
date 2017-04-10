@@ -5,6 +5,7 @@
 
 	$taskNumb = (int)htmlspecialchars($_GET["taskNumb"]);
 	setcookie("taskNumb", $taskNumb, time() + (86400 * 30), "/");
+
 	
 	
 	// $_SESSION["firstName"] = htmlspecialchars($_GET["firstName"]);
@@ -18,7 +19,8 @@
 	$estimatedTotCost = (int)htmlspecialchars($_GET["estimatedTotCost"]);
 	$permitCost = (int)htmlspecialchars($_GET["permitCost"]);
 
-	$projectID = insertProject("in progress", $estimatedTotCost, "planning", 0, $permitCost);
+	$projectID = insertProject("in progress", $estimatedTotCost, "planning", 0, $permitCost);	
+	setcookie("projectID", $projectID, time() + (86400 * 30), "/");
 	
 	$firstName = htmlspecialchars($_GET["firstName"]);
 	$lastName = htmlspecialchars($_GET["lastName"]);

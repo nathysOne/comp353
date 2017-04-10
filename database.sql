@@ -64,8 +64,19 @@ CREATE TABLE ItemCost (
 	ItemName varchar(30) NOT NULL,
 	Supplier varchar(30) NOT NULL,
 	CostInDollars int(10) NOT NULL,
-	FOREIGN KEY (ItemName) REFERENCES Item(ItemName)
+   	PRIMARY KEY (ItemName,Supplier)
 );
+
+#####LINKING TABLES#####
+CREATE TABLE ProjectToConstruction (
+    ProjectIDpref varchar(3),
+	ProjectIDsuff int(10),
+	
+	TaskIDpref varchar(3),
+	TaskIDsuff int(10)
+);
+
+
 
 
 #PROJECT 1
@@ -109,10 +120,17 @@ SELECT UsersIDpref,ProjectIDsuff
 	
 	
 	
-	
-	
-	
-	
+INSERT INTO Construction SET
+      Task= 'Door',
+      CostPerHrs= 60,
+      TimeInHrs= 78;
+	  
+	  
+INSERT INTO ProjectToConstruction SET
+	ProjectIDpref = 'hi',
+	ProjectIDsuff = 00,
+	TaskIDpref = 'hi',
+	TaskIDsuff = 88;
 	
 	
 
