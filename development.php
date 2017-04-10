@@ -1,18 +1,33 @@
 <?php
+	include_once("mySqlFunc.php");
 	session_start();
+	session_destroy();
 
 	$taskNumb = (int)htmlspecialchars($_GET["taskNumb"]);
 	setcookie("taskNumb", $taskNumb, time() + (86400 * 30), "/");
 	
 	
-	$_SESSION["firstName"] = htmlspecialchars($_GET["firstName"]);
-	$_SESSION["lastName"] = htmlspecialchars($_GET["lastName"]);
-	$_SESSION["address"] = htmlspecialchars($_GET["address"]);
-	$_SESSION["phoneNumb"] = htmlspecialchars($_GET["phoneNumb"]);
-
-	$_SESSION["estimatedTotCost"] = (int)htmlspecialchars($_GET["estimatedTotCost"]);
-	$_SESSION["permitCost"] = (int)htmlspecialchars($_GET["permitCost"]);
+	// $_SESSION["firstName"] = htmlspecialchars($_GET["firstName"]);
+	// $_SESSION["lastName"] = htmlspecialchars($_GET["lastName"]);
+	// $_SESSION["address"] = htmlspecialchars($_GET["address"]);
+	// $_SESSION["phoneNumb"] = htmlspecialchars($_GET["phoneNumb"]);
 	
+	// $_SESSION["estimatedTotCost"] = (int)htmlspecialchars($_GET["estimatedTotCost"]);
+	// $_SESSION["permitCost"] = (int)htmlspecialchars($_GET["permitCost"]);
+
+	$estimatedTotCost = (int)htmlspecialchars($_GET["estimatedTotCost"]);
+	$permitCost = (int)htmlspecialchars($_GET["permitCost"]);
+
+	$projectID = insertProject("in progress", $estimatedTotCost, "planning", 0, $permitCost);
+	
+	$firstName = htmlspecialchars($_GET["firstName"]);
+	$lastName = htmlspecialchars($_GET["lastName"]);
+	$address = htmlspecialchars($_GET["address"]);
+	$phoneNumb = htmlspecialchars($_GET["phoneNumb"]);
+	
+	insertUser($firstName, $lastName, $address, $phoneNumb, "Staff", $projectID);
+	
+
 	echo "<html>";
 		echo "<head>";
 			echo "<title>Construction Inc.</title>";

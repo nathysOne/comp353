@@ -1,6 +1,7 @@
 <?php 
-include_once 'connection.php';
-connect();
+include_once("mySqlFunc.php");
+session_start();
+session_destroy();
 ?>
 
 <html>
@@ -15,12 +16,8 @@ connect();
 		<h4>Please Log-In</h4>
 		<form action="login.php" method="get" id="chooseUser" >
 		 <select name="confirmedUsr">
-		  <option value="Director">Director</option>
-		  <option value="Staff">Staff</option>
-		  <option value="User">User</option>
 		  <?php
-		  //retrieve all users and add to dropdown
-		  //test();
+		  	retrieveAll();
 		  ?>
 		</select>
 		<button type="submit" form="chooseUser" value="Submit">Log In</button>

@@ -1,11 +1,15 @@
 <?php
-	//echo 'Hello ' . htmlspecialchars($_GET["confirmedUsr"]) . '!';
- 	$userStr = substr($_GET["confirmedUsr"],0,1);
+	include_once("mySqlFunc.php");
+	session_start();
+	session_destroy();
 	
-	if(strcmp($userStr, "U") == 0){
-		header('Location: '.$newURL);
-	}else{
+	
+ 	$userID = $_GET["confirmedUsr"];
+	
+	if(!(isCustomer($userID))){
 		header('Location: staffCP.php');
+	}else{
+		header('Location: '. $newURL);
 	}
 	
 	

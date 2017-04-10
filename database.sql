@@ -38,10 +38,10 @@ CREATE TABLE Users (
 		
         FirstName varchar(30) NOT NULL,
         LastName varchar(30) NOT NULL,
-        Address int(10) NOT NULL,
-        PhoneNumb varchar(10) NOT NULL,
+        Address varchar(100) NOT NULL,
+        PhoneNumb varchar(20) NOT NULL,
         Title varchar(30) NOT NULL,
-		LinkingProject varchar(30) NOT NULL,
+		LinkingProject varchar(30),
         PRIMARY KEY (UsersIDsuff, UsersIDpref)
 );
 
@@ -60,6 +60,14 @@ CREATE TABLE QtyForItems (
 			TaskIDsuff, ItemIDpref, ItemIDsuff)
 );
 
+CREATE TABLE ItemCost (
+	ItemName varchar(30) NOT NULL,
+	Supplier varchar(30) NOT NULL,
+	CostInDollars int(10) NOT NULL,
+	FOREIGN KEY (ItemName) REFERENCES Item(ItemName)
+);
+
+
 #PROJECT 1
 
 INSERT INTO Project SET
@@ -68,4 +76,44 @@ INSERT INTO Project SET
         Phase='done',
         Budget=99,
         PermitCost=100;
+		
+INSERT INTO Users SET
+        FirstName='Joe',
+        LastName='French',
+        Address='123 Widow Lane',
+        PhoneNumb='23984677',
+        Title='Customer',
+		LinkingProject= '';
+		
+INSERT INTO Users SET
+        FirstName='Jen',
+        LastName='Hallow',
+        Address='23 Dane Lane',
+        PhoneNumb='6756758',
+        Title='Customer',
+		LinkingProject= '';
+		
+INSERT INTO Users SET
+        FirstName='Manny',
+        LastName='Derik',
+        Address='123 Widow Lane',
+        PhoneNumb='23984677',
+        Title='Director',
+		LinkingProject= '';
+		
+SELECT UsersIDpref,ProjectIDsuff
+	FROM Students 
+	WHERE FirstName = 'XXX' AND
+		  LastName = 'XXX' AND
+		  PhoneNumb = 'XXX';
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
 

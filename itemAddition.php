@@ -1,4 +1,5 @@
 <?php
+	include_once("mySqlFunc.php");
 	session_start();
 	
 	$taskNumb = $_COOKIE["taskNumb"];
@@ -22,7 +23,8 @@
 				//outer loop for task
 				for($i = 0; $i<$taskNumb; $i++){
 					echo "<div class='innerBox'>";
-						echo "<dfn>Task #" . $i ." :</dfn><br><br>";
+						echo "<dfn>Task #" . $i ." : ";
+						echo $_SESSION["tsk".$i] . "</dfn><br><br>";
 						$numbOfItems = (int)$_GET["itm".$i];
 						//inner loop for items
 						for($j = 0; $j<$numbOfItems; $j++){
@@ -83,7 +85,7 @@
 		
 		///TEST/////
 		echo "<pre>";
-			print_r($_SESSION);
+			print_r($_GET);
 		echo "</pre>";
 		///TEST/////
 		
