@@ -1,21 +1,15 @@
  <?php
- 
-function test() {echo "testing";}
- 
-function connect() {
 	$servername = "localhost";
 	$username = "root";
 	$password = "password";
+	$dbms = "comp353Final";
 
 	// Create connection
-	$conn = new mysqli($servername, $username, $password);
+	$conn = new mysqli($servername, $username, $password, $dbms);
 
 	// Check connection
 	if ($conn->connect_error) {
-	    die("<script>console.log( 'Connection failed: " . 
-			$conn->connect_error . "' );</script>");
+	    die("Connection failed: ");
 	}
-	echo "<script>console.log( 'Connected successfully' );</script>";             
-}
- 
+	echo "Connected successfully";
 ?> 

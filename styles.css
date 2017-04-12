@@ -7,15 +7,61 @@ h1 {
     text-align: left;
 }
 
-p {
+h5 {
+	color: navy;
+	
+}
+
+p,h1,h2,h3,h4,h5 {
     font-family: verdana;
-    font-size: 20px;
+}
+
+dfn {
+    font-family: verdana;
+	font-size: 12px;
 }
 
 #chooseUser {
-    background-color: white;
+    background-color: MintCream;
 	width: 300px;
 	border: 1px solid gray;
 	margin: 10px;
 	padding: 30px;
+}
+
+.infoField {
+	margin: 5px;
+	background-color: MintCream;
+	border: 1px solid gray;
+	padding: 10px;
+	width: 500px;
+}
+
+.innerBox {
+	border: 1px solid navy;
+	padding: 5px;
+}
+
+.smallField{
+	width: 50px;
+}
+
+.smallText{
+	font-size: 8px;
+}
+
+#userDisplay {
+	background-color: MintCream;
+	border: 1px solid gray;
+	margin: 5px;
+	padding: 10px;
+	width: 700px;
+}
+
+#userDisplayTable th,#userDisplayTable td {
+	font-size: 13;
+    font-family: verdana;
+	border: 1px solid gray;
+	padding-left: 5px;
+	padding-right : 5px;
 }
