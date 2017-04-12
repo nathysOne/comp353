@@ -2,10 +2,10 @@
 	include_once("mySqlFunc.php");
 	session_start();
 	
-	$taskNumb = $_COOKIE["taskNumb"];
-	
-	$projectID =  $_COOKIE["projectID"];
-	
+	$taskNumb = $_SESSION["numberOfTasks"]; //FOR CONSIDERATION
+
+	$projectID = $_SESSION["workingProjectID"]; //FOR CONSIDERATION
+	echo "<h1>". $projectID . "</h1>";
 	
 	//saves all $_GET tasks name into $_SESSION
 	for($i = 0; $i < $taskNumb; $i++){
@@ -43,9 +43,13 @@
 						echo $_SESSION["tsk".$i] . "</dfn><br><br>";
 						$numbOfItems = (int)$_GET["itm".$i];
 						
+						//COOKIE PROBLEM!!!
 						//Set Cookie, each task has how many items?
-						$cookieTask = "tsk" . $i;
-						setcookie($cookieTask, $numbOfItems, time() + (86400 * 30), "/");
+						// $cookieTask = "tsk" . $i;
+						// setcookie($cookieTask, $numbOfItems, time() + (86400 * 30), "/");
+						$tskCount = "tskInc" . $i;
+						$_SESSION[$tskCount] = $numbOfItems;
+						
 						
 						//inner loop for items
 						for($j = 0; $j<$numbOfItems; $j++){
@@ -117,15 +121,15 @@
 		
 		
 		///TEST/////
-		echo "<pre>";
-			print_r($_GET);
-		echo "</pre>";
+		// echo "<pre>";
+		// 	print_r($_GET);
+		// echo "</pre>";
 		///TEST/////
 		
 		///TEST/////
-		echo "<pre>";
-			print_r($_SESSION);
-		echo "</pre>";
+		// echo "<pre>";
+		// 	print_r($_SESSION);
+		// echo "</pre>";
 		///TEST/////
 		
 		echo "</body>";

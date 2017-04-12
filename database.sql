@@ -26,7 +26,6 @@ CREATE TABLE Item (
 		ItemIDsuff int(10) NOT NULL AUTO_INCREMENT,
 		
         ItemName varchar(30) NOT NULL,
-        CostInDollars int(10) NOT NULL,
         DeliveryDays int(10) NOT NULL,
         Supplier varchar(30) NOT NULL,
         PRIMARY KEY (ItemIDsuff, ItemIDpref)
@@ -67,7 +66,6 @@ CREATE TABLE ItemCost (
    	PRIMARY KEY (ItemName,Supplier)
 );
 
-#####LINKING TABLES#####
 CREATE TABLE ProjectToConstruction (
     ProjectIDpref varchar(3),
 	ProjectIDsuff int(10),

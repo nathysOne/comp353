@@ -50,8 +50,7 @@ function createAllTables(){
 	    	"ItemIDpref varchar(3) DEFAULT 'itm', " . 
 			"ItemIDsuff int(10) NOT NULL AUTO_INCREMENT, " . 
 		
-	        "ItemName varchar(30) NOT NULL, " . 
-	        "CostInDollars int(10) NOT NULL, " . 
+	        "ItemName varchar(30) NOT NULL, " .
 	        "DeliveryDays int(10) NOT NULL, " . 
 	        "Supplier varchar(30) NOT NULL, " . 
 	        "PRIMARY KEY (ItemIDsuff, ItemIDpref)" . 
@@ -104,6 +103,17 @@ function createAllTables(){
 		"TaskIDpref varchar(3), " . 
 		"TaskIDsuff int(10)" . 
 		"); ";
+	mysqli_query($conn, $sql);
+	
+	
+	#####ADD DIRECTOR#####
+	$sql = "INSERT INTO Users SET " . 
+	        "FirstName='Manny'," . 
+	        "LastName='Derik'," . 
+	        "Address='123 Widow Lane'," . 
+	        "PhoneNumb='23984677'," . 
+	        "Title='Director'," . 
+			"LinkingProject= '';";
 	mysqli_query($conn, $sql);
 
 	mysqli_close($conn);
@@ -202,17 +212,12 @@ function insertProject($Status, $Estimated, $Phase, $Budget, $PermitCost){
 		
 	mysqli_query($conn, $sql);
 	
-	$sql = "SELECT ProjectIDpref,ProjectIDsuff " . 
-			"FROM Project " . 
-			"WHERE Estimated = '" . $Estimated . "' AND " . 
-			  	"PermitCost = '" . $PermitCost . "' AND " . 
-			  	"Phase = '" . $Phase . "';";
-
+	
+	$sql = "SELECT @last_id := MAX(ProjectIDsuff) FROM Project;";
 	$result = $conn->query($sql);
 	
-	$row = $result->fetch_array(MYSQLI_ASSOC);
-
-	$projectID = $row["ProjectIDpref"] . $row["ProjectIDsuff"];
+	$row = $result->fetch_array(MYSQLI_NUM);
+	$projectID = "prj" . (int)$row[0];
 	
 	mysqli_close($conn);
 	return $projectID;
@@ -243,19 +248,17 @@ function insertTask($Task, $CostPerHrs, $TimeInHrs){
 }
 
 //insert item
-function insertItem($ItemName, $CostInDollars, $DeliveryDays, $Supplier){
+function insertItem($ItemName, $DeliveryDays, $Supplier){
     
 	$conn = connectDB();
 	
 	$sql = "INSERT INTO Item SET " .
 	      		"ItemName= '" . $ItemName . "', " .
-	      		"CostInDollars= " . $CostInDollars . ", " .
 	      	  	"DeliveryDays= " . $DeliveryDays . ", " .
-				"Supplier= " . $Supplier . 
-				"; ";
-	echo $sql;
-	echo "<br>";
-	mysqli_query($conn, $sql);
+				"Supplier= '" . $Supplier . 
+				"'; ";
+
+	if(!mysqli_query($conn, $sql)) echo "Fail";
 	
 	$sql = "SELECT @last_id := MAX(ItemIDsuff) FROM Item;";
 	mysqli_query($conn, $sql);
@@ -333,26 +336,180 @@ function insertItemCost($ItemName, $Supplier, $CostInDollars){
 	mysqli_close($conn);
 }
 
-function calculateBudget($ProjectID, $ItemID){
+function calculateBudget($ProjectID){
+	
+	//Transform $ProjectID into ProjectIDSuff
+	$strLength = strlen($ProjectID) - 3;
+	$ProjectIDsuff = substr($ProjectID , 3 ,$strLength);
+	
 	$conn = connectDB();
 	
+	//calculate total item cost for whole project.
+	$totalItemSum = 0;
 	
-	//multiply QtyForItems.qty and ItemID.CostInDollars where projID = 
-	//+
-	//sum(for each: projectID_A->task.CostPerHrs * projectID_A->task.TimeInHrs)
-	//+
-	//PermitCost.permit
-	
+	$sql = "SELECT TaskIDsuff FROM ProjectToConstruction " . 
+				"WHERE ProjectIDsuff = '" . $ProjectIDsuff . "';";
 	mysqli_query($conn, $sql);
+	$result = $conn->query($sql);
+	
+	while($get_TaskID = $result->fetch_array(MYSQLI_ASSOC)){
+			$TaskIDsuff = $get_TaskID["TaskIDsuff"];
+			
+			$sqlInner = "SELECT ItemIDsuff, Quantity FROM QtyForItems " . 
+							"WHERE TaskIDsuff = '" . $TaskIDsuff . "';";
+			mysqli_query($conn, $sqlInner);
+			$resultInner = $conn->query($sqlInner);
+			
+			while($get_ItemID_Qty = $resultInner->fetch_array(MYSQLI_ASSOC)){
+				$ItemIDsuff = $get_ItemID_Qty["ItemIDsuff"];
+				$Quantity = $get_ItemID_Qty["Quantity"];
+				
+				$sqlInnerInner = "SELECT ItemName, Supplier FROM Item " . 
+									"WHERE ItemIDsuff = '" . $ItemIDsuff . "';";
+				mysqli_query($conn, $sqlInnerInner);
+				$resultInnerInner = $conn->query($sqlInnerInner);
+				
+				$get_ItemName_Supl = $resultInnerInner->fetch_array(MYSQLI_ASSOC);
+				$ItemName = $get_ItemName_Supl["ItemName"];
+				$Supplier = $get_ItemName_Supl["Supplier"];
+					
+				$sqlInnerInner = "SELECT CostInDollars FROM ItemCost " . 
+									"WHERE ItemName = '" . $ItemName . "'" . 
+									"AND Supplier = '" . $Supplier . "';";
+				mysqli_query($conn, $sqlInnerInner);
+				$resultInnerInner = $conn->query($sqlInnerInner);
+				
+				$get_CostInDollars = $resultInnerInner->fetch_array(MYSQLI_ASSOC);
+				$CostInDollars = $get_CostInDollars["CostInDollars"];
+				
+				$totalItemSum = $totalItemSum + ($CostInDollars * $Quantity);
+			}
+	}
+	
+	
+	
+	//calculate labour cost for all tasks
+	$totalLabourSum = 0;
+	
+	$sql = "SELECT TaskIDsuff FROM ProjectToConstruction " . 
+			"WHERE ProjectIDsuff = " . $ProjectIDsuff . ";";
+	mysqli_query($conn, $sql);
+	$result = $conn->query($sql);
+	
+	while($get_TaskID = $result->fetch_array(MYSQLI_ASSOC)){
+		
+		$TaskIDsuff = $get_TaskID["TaskIDsuff"];
+		
+		$sqlInner = "SELECT CostPerHrs, TimeInHrs FROM Construction " . 
+					"WHERE TaskIDsuff = " . $TaskIDsuff . ";";
+		mysqli_query($conn, $sqlInner);
+		$result = $conn->query($sqlInner);
+		
+		$get_Cost_Time = $result->fetch_array(MYSQLI_ASSOC);
+		$CostPerHrs = $get_Cost_Time["CostPerHrs"];
+		$TimeInHrs = $get_Cost_Time["TimeInHrs"];
+		
+		$totalLabourSum = $totalLabourSum + ($CostPerHrs * $TimeInHrs);
+		
+	}
+	
+	
+	//PermitCost
+	$sql = "SELECT PermitCost FROM Project WHERE ProjectIDsuff = '" . $ProjectIDsuff . "'";
+	mysqli_query($conn, $sql);
+	$result = $conn->query($sql);
+	$thePertmitCost = $result->fetch_array(MYSQLI_ASSOC);
+
+	$totalBudget = (int)$thePertmitCost["PermitCost"] + (int)$totalItemSum + (int)$totalLabourSum;
+	
+	echo "<h4>Total Item Cost: " . $totalItemSum . "<h4>";
+	echo "<h4>Total Labour Cost: " . $totalLabourSum . "<h4>";
+	echo "<h4>Permit Cost: " . $thePertmitCost["PermitCost"] . "<h4>";
+	echo "<h4>Project Total Cost: " . $totalBudget . "<h4>";
+
+	$sql = "UPDATE Project SET " .
+	        "Budget=" . $totalBudget . " WHERE " .
+	        "ProjectIDsuff=" . $ProjectIDsuff . ";";
+	mysqli_query($conn, $sql);
+	
 	mysqli_close($conn);
 }
 
 
 
+//////////////////USER FUNCTIONS//////////////////
 
+function displayUserRow($UserID){
+	
+	$strLength = strlen($UserID) - 3;
+	$UsersIDsuff = substr($UserID , 3 ,$strLength);
+		
+	$conn = connectDB();	
+	
+	$sql = "SELECT FirstName, LastName, Address, PhoneNumb, LinkingProject " . 
+				"FROM Users WHERE UsersIDsuff = " . $UsersIDsuff . ";";
+	mysqli_query($conn, $sql);
+	$result = $conn->query($sql);
+	$get_User = $result->fetch_array(MYSQLI_ASSOC);
+	
+	$FirstName = $get_User["FirstName"];
+	$LastName = $get_User["LastName"];
+	$Address = $get_User["Address"];
+	$PhoneNumb = $get_User["PhoneNumb"];
+	$LinkingProject = $get_User["LinkingProject"];
+	mysqli_close($conn);
+	
+	
+	echo "<div id='userDisplay'>";
+		echo "<h5>User Information</h5>";
+		
+		echo "<table id='userDisplayTable'>";
+			echo "<tr>";
+				echo "<th>";
+					echo "First Name";
+				echo "</th>";
+				echo "<th>";
+					echo "Last Name";
+				echo "</th>";
+				echo "<th>";
+					echo "Address";
+				echo "</th>";
+				echo "<th>";
+					echo "PhoneNumb";
+				echo "</th>";
+			echo "</tr>";
+			
+			echo "<tr>";
+				echo "<td>";
+					echo $FirstName;
+				echo "</td>";
+				echo "<td>";
+					echo $LastName;
+				echo "</td>";
+				echo "<td>";
+					echo $Address;
+				echo "</td>";
+				echo "<td>";
+					echo $PhoneNumb;
+				echo "</td>";
+			echo "</tr>";
+		echo "</table>";
+		
+	echo "</div>";
+	
+	return $LinkingProject;
+}
 
-
-
+function displayUserProject($ProjectID){
+	// $strLength = strlen($ProjectID) - 3;
+	// $ProjectIDsuff = substr($ProjectID , 3 ,$strLength);
+	//
+	// $conn = connectDB();
+	//
+	// $sql = "SELECT FirstName, LastName, Address, PhoneNumb, LinkingProject " .
+	// 			"FROM Users WHERE UsersIDsuff = " . $UsersIDsuff . ";";
+	// mysqli_query($conn, $sql);
+}
 
 
 

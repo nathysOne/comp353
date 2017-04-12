@@ -2,22 +2,21 @@
 	include_once("mySqlFunc.php");
 	session_start();
 	
-	$taskNumb = $_COOKIE["taskNumb"];
-	setcookie("taskNumb", "", time() - 3600);
+	$taskNumb = $_SESSION["numberOfTasks"]; //FOR CONSIDERATION
 	
-	$projectID =  $_COOKIE["projectID"];
-	setcookie("projectID", "", time() - 3600);
+	$projectID = $_SESSION["workingProjectID"]; //FOR CONSIDERATION
 	
 	//saves all $_GET tasks into DATABASE
 	$itemIncrementIndex = 0;
 	for($i = 0; $i < $taskNumb; $i++){
-		$tskIncrement = "tsk" . $i;
-		$tskTitle = $_SESSION[$tskIncrement];
+		//$tskIncrement = "tsk" . $i;
+		$tskIncrement = "tskInc" . $i;
+		
+		$tskTitle = $_SESSION["tsk" . $i];
 		$currentTaskID = $_SESSION[$tskTitle];
 
-		$itemNumb = $_COOKIE[$tskIncrement];
-		echo "item numb: " . $itemNumb . "<br>";
-		setcookie($tskIncrement, "", time() - 3600);
+		//COOKIE PROBLEM!!!
+		$itemNumb = $_SESSION[$tskIncrement];
 		
 		for($g = 0; $g < $itemNumb; $g++){
 			$ItemName = $_GET["itm" . $itemIncrementIndex];
@@ -28,15 +27,16 @@
 			
 			insertItemCost($ItemName, $Supplier, $CostInDollars);
 			
-			$ItemID = insertItem($ItemName, $CostInDollars, $DeliveryDays, $Supplier);
+			$ItemID = insertItem($ItemName, $DeliveryDays, $Supplier);
 		
 			insertQtyForItems($projectID, $currentTaskID, $ItemID, $Quantity);
 			
 			$itemIncrementIndex++;
 		}
-
-
+		
 	}
+	
+	calculateBudget($projectID);
 	
 	echo "<html>";
 		echo "<head>";
@@ -49,23 +49,25 @@
 		
 		
 		///TEST/////
-		echo "<pre>";
-		echo "<h5>SESSION<h5>";
-			print_r($_SESSION);
-		echo "</pre>";
+		// echo "<pre>";
+		// echo "<h5>SESSION<h5>";
+		// 	print_r($_SESSION);
+		// echo "</pre>";
 		///TEST/////
-		///TEST/////
-		echo "<pre>";
-		echo "<h5>GET<h5>";
-			print_r($_GET);
-		echo "</pre>";
-		///TEST/////
+		// ///TEST/////
+		// echo "<pre>";
+		// echo "<h5>GET<h5>";
+		// 	print_r($_GET);
+		// echo "</pre>";
+		// ///TEST/////
 		
 		echo "</body>";
 	echo "</html>";
 	
 	// remove all session variables
 	session_unset();
-	session_destroy(); 
+	session_destroy();
+	
+	echo "<a href=index.php>Return To Home</a>";
 			
 ?>
